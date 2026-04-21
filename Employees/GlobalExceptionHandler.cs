@@ -15,12 +15,15 @@ public class GlobalExceptionHandler : IExceptionHandler
         Exception exception,
         CancellationToken cancellationToken)
     {
+        Console.WriteLine(exception.StackTrace);
         var correlationId = httpContext.TraceIdentifier;
 
         _logger.LogError(exception,
             "Unhandled exception. CorrelationId: {CorrelationId}, Path: {Path}",
             correlationId,
             httpContext.Request.Path);
+        
+        
 
         var (statusCode, title) = exception switch
         {

@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -31,6 +30,14 @@ public class Employee
     [Required]
     [Column("hire_date")]
     public DateTime HireDate { get; set; }
+    
+    public virtual ICollection<DepartmentEmployee> DepartmentEmployees { get; set; } = new List<DepartmentEmployee>();
+
+    public virtual ICollection<DepartmentManager> DepartmentManagers { get; set; } = new List<DepartmentManager>();
+
+    public virtual ICollection<Salary> Salaries { get; set; } = new List<Salary>();
+
+    public virtual ICollection<Title> Titles { get; set; } = new List<Title>();
 }
 
 public enum EmployeeGender
