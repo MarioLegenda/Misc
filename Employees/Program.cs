@@ -1,11 +1,18 @@
 using Employees;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
+
 var connString = builder.Configuration["ConnectionStrings:ConnString"];
 
+var dataSourceBuilder = new NpgsqlDataSourceBuilder(connString);
+var dataSource = dataSourceBuilder.Build();
 builder.Services.AddDbContext<EmployeesContext>(options =>
-    options.UseNpgsql(connString));
+{
+    options.UseNpgsql(dataSource);
+});
 
 builder.Services.AddHealthChecks()
     .AddNpgSql(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -32,7 +39,11 @@ builder.Services.AddHsts(options =>
 });
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 
 var app = builder.Build();
 
@@ -58,3 +69,5 @@ else
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }

@@ -28,21 +28,22 @@ public partial class EmployeesContext : DbContext
     public virtual DbSet<Title> Titles { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=employees;Username=postgres;Password=password");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema("employees");
         
-        modelBuilder.Entity<Employee>()
+        modelBuilder.HasPostgresEnum<EmployeeGender>("employee_gender");
+        
+        /*modelBuilder.Entity<Employee>()
             .Property(e => e.Gender)
             .HasConversion(
                 v => v == EmployeeGender.M ? "M" : "F",
                 v => v == "M" ? EmployeeGender.M : EmployeeGender.F
-            );
+            );*/
         
-        // modelBuilder.HasPostgresEnum("employees", "employee_gender", new[] { "M", "F" });
+        //modelBuilder.HasPostgresEnum("employees", "employee_gender", new[] { "M", "F" });
 
         modelBuilder.Entity<Department>(entity =>
         {
@@ -128,6 +129,10 @@ public partial class EmployeesContext : DbContext
             entity.Property(e => e.LastName)
                 .HasMaxLength(16)
                 .HasColumnName("last_name");
+            entity
+                .Property(e => e.Gender)
+                .HasColumnType("text")
+                .IsRequired();
         });
 
         modelBuilder.Entity<Salary>(entity =>

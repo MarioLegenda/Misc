@@ -1,4 +1,4 @@
-namespace Employees.DTO;
+namespace Employees.OutgoingDTO;
 
 public class EmployeeDto
 {
@@ -6,7 +6,7 @@ public class EmployeeDto
     public DateTime BirthDate { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
-    public EmployeeGender Gender { get; set; }
+    public string Gender { get; set; }
     public DateTime HireDate { get; set; }
 
     public List<DepartmentEmployeeDto> DepartmentEmployees { get; set; }

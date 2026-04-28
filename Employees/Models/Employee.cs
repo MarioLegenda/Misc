@@ -16,19 +16,19 @@ public class Employee
     [Required]
     [MaxLength(14)]
     [Column("first_name")]
-    public string FirstName { get; set; }
+    public string FirstName { get; set; } = null!;
 
     [Required]
     [MaxLength(16)]
     [Column("last_name")]
-    public string LastName { get; set; }
+    public string LastName { get; set; } = null!;
 
-    [Required]
-    [Column("gender")]
-    public EmployeeGender Gender { get; set; }
+    [Required] 
+    [Column("gender")] 
+    public string Gender { get; set; }
 
-    [Required]
-    [Column("hire_date")]
+    [Required] 
+    [Column("hire_date")] 
     public DateTime HireDate { get; set; }
     
     public virtual ICollection<DepartmentEmployee> DepartmentEmployees { get; set; } = new List<DepartmentEmployee>();
