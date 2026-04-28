@@ -1,4 +1,6 @@
-﻿namespace Employee.Tests;
+﻿using Employees.OutgoingDTO;
+
+namespace Employee.Tests;
 
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net.Http.Json;
@@ -17,7 +19,7 @@ public class EmployeeControllerTest: IClassFixture<CustomWebApplicationFactory>
     }
     
     [Fact]
-    public async Task UpdateEmployee_Returns_NoContent()
+    public async Task UpdateEmployee_Returns_Ok()
     {
         var dto = new
         {
@@ -34,6 +36,29 @@ public class EmployeeControllerTest: IClassFixture<CustomWebApplicationFactory>
 
         var response = await _client.PutAsJsonAsync("/api/employee", dto);
 
-        Assert.Equal(System.Net.HttpStatusCode.NoContent, response.StatusCode);
+        Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
+        
+        var employee = await response.Content.ReadFromJsonAsync<EmployeeDto>();
+
+        Assert.NotNull(employee);
+        Assert.Equal(110022, employee.Id);
+        Assert.Equal("John", employee.FirstName);
+        Assert.Equal("Doe", employee.LastName);
+        
+        var expectedBirthDate = DateTime.SpecifyKind(
+            DateTime.Parse("1990-01-01T00:00:00"),
+            DateTimeKind.Unspecified
+        );
+        
+        var expectedHireDate = DateTime.SpecifyKind(
+            DateTime.Parse("2020-01-01T00:00:00"),
+            DateTimeKind.Unspecified
+        );
+        
+        Assert.Equal(expectedBirthDate, employee.BirthDate);
+        Assert.Equal(expectedHireDate, employee.HireDate);
+        Assert.Equal("M", employee.Gender);
+        
+        Assert.Equal(234434, employee.Salaries[0].Amount);
     }
 }

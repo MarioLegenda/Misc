@@ -33,6 +33,7 @@ public class EmployeeController : ControllerBase
     [HttpPut]
     public async Task<IActionResult> UpdateEmployee(
         [FromBody] UpdateEmployeeDto dto,
+        EmployeeRepository repository,
         EmployeesContext ctx)
     {
         if (!ModelState.IsValid)
@@ -107,6 +108,6 @@ public class EmployeeController : ControllerBase
 
         await ctx.SaveChangesAsync();
 
-        return NoContent();
+        return Ok(await repository.GetEmployee(dto.Id));
     }
 }
