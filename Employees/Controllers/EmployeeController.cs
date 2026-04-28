@@ -4,7 +4,7 @@ using Employees.Repository;
 namespace Employees.Controllers;
 
 using Employees.IncomingDTO;
-using Employees.OutgoingDTO;
+using Employees.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

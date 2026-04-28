@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Employees.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Employees;

@@ -1,9 +1,11 @@
-﻿using Employees.OutgoingDTO;
+﻿using Employees.IncomingDTO;
 
 namespace Employee.Tests;
 
+using Employees.OutgoingDTO;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net.Http.Json;
+using Employees.Models;
 
 public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 {
@@ -21,15 +23,7 @@ public class EmployeeControllerTest: IClassFixture<CustomWebApplicationFactory>
     [Fact]
     public async Task CreateEmployee_ReturnsOk()
     {
-        var faker = new CreateEmployeeDtoFaker();
-
-        var dto = faker.Generate();
-        
-        var response = await _client.PostAsJsonAsync("/api/employee", dto);
-        
-        Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
-        
-        var employee = await response.Content.ReadFromJsonAsync<EmployeeDto>();
+        var (employee, dto) = await CreateEmployee();
 
         Assert.NotNull(employee);
         Assert.Equal(dto.FirstName, employee.FirstName);
@@ -38,14 +32,14 @@ public class EmployeeControllerTest: IClassFixture<CustomWebApplicationFactory>
         Assert.Equal(dto.BirthDate.Date, employee.BirthDate.Date);
         Assert.Equal(dto.HireDate.Date, employee.HireDate.Date);
         
-        Assert.Equal(dto.SalaryFromDate, employee.Salaries[0].FromDate);
-        Assert.Equal(dto.SalaryToDate, employee.Salaries[0].ToDate);
+        Assert.Equal(dto.SalaryFromDate, employee.Salaries.First().FromDate);
+        Assert.Equal(dto.SalaryToDate, employee.Salaries.First().ToDate);
         
-        Assert.Equal(dto.Title, employee.Titles[0].Title1);
-        Assert.Equal(dto.TitleFromDate, employee.Titles[0].FromDate);
-        Assert.Equal(dto.TitleToDate, employee.Titles[0].ToDate);
+        Assert.Equal(dto.Title, employee.Titles.First().Title1);
+        Assert.Equal(dto.TitleFromDate, employee.Titles.First().FromDate);
+        Assert.Equal(dto.TitleToDate, employee.Titles.First().ToDate);
         
-        Assert.Equal(dto.DepartmentId, employee.DepartmentEmployees[0].DepartmentId);
+        Assert.Equal(dto.DepartmentId, employee.DepartmentEmployees.First().DepartmentId);
     }
     
     [Fact]
@@ -91,5 +85,22 @@ public class EmployeeControllerTest: IClassFixture<CustomWebApplicationFactory>
         
         Assert.Equal(234434, employee.Salaries[0].Amount);
         Assert.Equal("Manager", employee.Titles[0].Title1);
+    }
+
+    private async Task<(Employee, CreateEmployeeDTO)> CreateEmployee()
+    {
+        var faker = new CreateEmployeeDtoFaker();
+
+        var dto = faker.Generate();
+        
+        var response = await _client.PostAsJsonAsync("/api/employee", dto);
+        
+        Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
+        
+        var employee = await response.Content.ReadFromJsonAsync<Employee>();
+
+        Assert.NotNull(employee);
+
+        return (employee, dto);
     }
 }
