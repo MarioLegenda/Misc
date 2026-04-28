@@ -29,6 +29,47 @@ public class EmployeeController : ControllerBase
 
         return Ok(emp);
     }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateEmployee(
+        [FromBody] CreateEmployeeDTO dto,
+        EmployeesContext ctx,
+        EmployeeRepository repository)
+    {
+        var emp = new Employee();
+        emp.Gender = dto.Gender;
+        emp.FirstName = dto.FirstName;
+        emp.LastName = dto.LastName;
+        emp.HireDate = dto.HireDate;
+        emp.BirthDate = dto.BirthDate;
+
+        var salary = new Salary();
+        salary.Amount = dto.Salary;
+        salary.FromDate = dto.SalaryFromDate;
+        salary.ToDate = dto.SalaryToDate;
+
+        var title = new Title();
+        title.Title1 = dto.Title;
+        title.FromDate = dto.TitleFromDate;
+        title.ToDate = dto.TitleToDate;
+
+        emp.Salaries.Add(salary);
+        emp.Titles.Add(title);
+
+        ctx.Employees.Add(emp);
+
+        await ctx.SaveChangesAsync();
+
+        var departmentEmployee = new DepartmentEmployee();
+        departmentEmployee.DepartmentId = dto.DepartmentId;
+        departmentEmployee.EmployeeId = emp.Id;
+
+        ctx.DepartmentEmployees.Add(departmentEmployee);
+        
+        await ctx.SaveChangesAsync();
+        
+        return Ok(await repository.GetEmployee(emp.Id));
+    }
     
     [HttpPut]
     public async Task<IActionResult> UpdateEmployee(

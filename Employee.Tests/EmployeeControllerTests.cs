@@ -17,6 +17,36 @@ public class EmployeeControllerTest: IClassFixture<CustomWebApplicationFactory>
     {
         _client = factory.CreateClient();
     }
+
+    [Fact]
+    public async Task CreateEmployee_ReturnsOk()
+    {
+        var faker = new CreateEmployeeDtoFaker();
+
+        var dto = faker.Generate();
+        
+        var response = await _client.PostAsJsonAsync("/api/employee", dto);
+        
+        Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
+        
+        var employee = await response.Content.ReadFromJsonAsync<EmployeeDto>();
+
+        Assert.NotNull(employee);
+        Assert.Equal(dto.FirstName, employee.FirstName);
+        Assert.Equal(dto.LastName, employee.LastName);
+
+        Assert.Equal(dto.BirthDate.Date, employee.BirthDate.Date);
+        Assert.Equal(dto.HireDate.Date, employee.HireDate.Date);
+        
+        Assert.Equal(dto.SalaryFromDate, employee.Salaries[0].FromDate);
+        Assert.Equal(dto.SalaryToDate, employee.Salaries[0].ToDate);
+        
+        Assert.Equal(dto.Title, employee.Titles[0].Title1);
+        Assert.Equal(dto.TitleFromDate, employee.Titles[0].FromDate);
+        Assert.Equal(dto.TitleToDate, employee.Titles[0].ToDate);
+        
+        Assert.Equal(dto.DepartmentId, employee.DepartmentEmployees[0].DepartmentId);
+    }
     
     [Fact]
     public async Task UpdateEmployee_Returns_Ok()
