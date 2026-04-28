@@ -87,7 +87,6 @@ public class EmployeeController : ControllerBase
         var salary = await ctx.Salaries.FirstOrDefaultAsync(e => e.EmployeeId == dto.Id);
         if (salary == null)
         {
-            employee.Salaries.Clear();
             employee.Salaries.Add(new Salary()
             {
                 EmployeeId = employee.Id,

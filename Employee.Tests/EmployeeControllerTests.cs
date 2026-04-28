@@ -60,5 +60,6 @@ public class EmployeeControllerTest: IClassFixture<CustomWebApplicationFactory>
         Assert.Equal("M", employee.Gender);
         
         Assert.Equal(234434, employee.Salaries[0].Amount);
+        Assert.Equal("Manager", employee.Titles[0].Title1);
     }
 }
