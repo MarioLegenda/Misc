@@ -2,6 +2,7 @@ using Employees;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using System.Text.Json.Serialization;
+using Employees.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,8 @@ builder.Services.AddDbContext<EmployeesContext>(options =>
 {
     options.UseNpgsql(dataSource);
 });
+
+builder.Services.AddScoped<EmployeeRepository>();
 
 builder.Services.AddHealthChecks()
     .AddNpgSql(builder.Configuration.GetConnectionString("DefaultConnection"));
