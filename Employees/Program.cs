@@ -5,6 +5,7 @@ using Npgsql;
 using System.Text.Json.Serialization;
 using Employees.Models;
 using Employees.Repository;
+using Employees.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -21,7 +22,7 @@ builder.Services.AddDbContext<EmployeesContext>(options =>
     options.UseNpgsql(dataSource);
 });
 
-builder.Services.AddDefaultIdentity<User>(options =>
+builder.Services.AddIdentity<User, IdentityRole>(options =>
     {
         options.SignIn.RequireConfirmedAccount = false;
     })
@@ -54,6 +55,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 
 builder.Services.AddScoped<EmployeeRepository>();
+builder.Services.AddScoped<JwtService>();
 
 builder.Services.AddHealthChecks()
     .AddNpgSql(builder.Configuration.GetConnectionString("DefaultConnection"));

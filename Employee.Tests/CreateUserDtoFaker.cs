@@ -1,7 +1,5 @@
 using Bogus;
-using Bogus.Extensions;
 using Employees.Auth;
-using Employees.IncomingDTO;
 
 namespace Employee.Tests;
 
@@ -11,7 +9,10 @@ public class CreateUserDtoFaker : Faker<RegisterDto>
     {
         RuleFor(e => e.Name, f => f.Name.FirstName());
         RuleFor(e => e.LastName, f => f.Name.LastName());
-        RuleFor(e => e.Email, f => f.Person.Email);
-        RuleFor(e => e.Password, f => f.Person.UserName);
+        RuleFor(e => e.Email, f =>
+            $"user{Guid.NewGuid().ToString("N")[..8]}@example.com");
+
+        RuleFor(e => e.Password, f =>
+            $"P@ssword{Guid.NewGuid().ToString("N")[..8]}");
     }
 }

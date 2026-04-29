@@ -12,18 +12,20 @@ using Microsoft.AspNetCore.Mvc;
 public class AuthController : ControllerBase
 {
     private readonly SignInManager<User> _signInManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
     private readonly UserManager<User> _userManager;
     private readonly JwtService _jwtService;
 
-    public AuthController(UserManager<User> userManager, SignInManager<User> signInManager, JwtService jwtService)
+    public AuthController(RoleManager<IdentityRole> roleManager, UserManager<User> userManager, SignInManager<User> signInManager, JwtService jwtService)
     {
+        _roleManager = roleManager;
         _signInManager = signInManager;
         _userManager = userManager;
         _jwtService = jwtService;
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterDto dto)
+    public async Task<IActionResult> Register([FromBody] RegisterDto dto)
     {
         var user = new User
         {
@@ -37,11 +39,23 @@ public class AuthController : ControllerBase
 
         if (!result.Succeeded)
             return BadRequest(result.Errors);
+        
+        var roleExists = await _roleManager.RoleExistsAsync("User");
+        if (!roleExists)
+        {
+            await _roleManager.CreateAsync(new IdentityRole("User"));
+        }
 
         // optionally assign default role
         await _userManager.AddToRoleAsync(user, "User");
         
-        return Ok(await _userManager.FindByEmailAsync(dto.Email));
+        return Created(string.Empty, new
+        {
+            user.Id,
+            user.Email,
+            user.Name,
+            user.LastName
+        });
     }
 
     [HttpPost("login")]
