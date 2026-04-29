@@ -65,6 +65,33 @@ public class EmployeeControllerTest: IClassFixture<CustomWebApplicationFactory>
         _client.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", this.token);
     }
+    
+    [Fact]
+    public async Task GetEmployees_ReturnsOk()
+    {
+        var response = await _client.GetAsync($"/api/employee?page=1&pageSize=20");
+        
+        Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
+        
+        var employees = await response.Content.ReadFromJsonAsync<List<EmployeeDto>>();
+
+        Assert.NotNull(employees);
+        Assert.True(employees.Count == 20);
+        
+        foreach (var emp in employees)
+        {
+            Assert.NotNull(emp);
+            
+            Assert.False(string.IsNullOrEmpty(emp.FirstName));
+            Assert.False(string.IsNullOrEmpty(emp.LastName));
+
+            Assert.NotEqual(default, emp.BirthDate);
+            Assert.NotEqual(default, emp.HireDate);
+            
+            Assert.True(emp.Salaries.Count > 0);
+            Assert.True(emp.Titles.Count > 0);
+        }
+    }
 
     [Fact]
     public async Task GetEmployeeById_ReturnsOk()

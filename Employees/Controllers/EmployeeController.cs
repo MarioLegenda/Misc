@@ -1,7 +1,6 @@
-using Microsoft.AspNetCore.Authorization;
-
 namespace Employees.Controllers;
 
+using Microsoft.AspNetCore.Authorization;
 using Employees.Repository;
 using Employees.IncomingDTO;
 using Employees.Models;
@@ -12,6 +11,14 @@ using Microsoft.EntityFrameworkCore;
 [Route("api/[controller]")]
 public class EmployeeController : ControllerBase
 {
+    [Route("")]
+    [HttpGet]
+    [Authorize(Roles = "User")]
+    public async  Task<IActionResult> Index(EmployeeRepository repository, int page, int pageSize)
+    {
+        return Ok(await repository.GetEmployees(page, pageSize));
+    }
+
     [Route("{id}")]
     [HttpGet]
     [Authorize(Roles = "User")]
