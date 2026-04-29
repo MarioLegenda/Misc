@@ -50,6 +50,9 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
 
     public async Task DisposeAsync()
     {
+        var response = await _client.PostAsync("/api/auth/logout", null);
+        
+        Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
     }
 }
 
