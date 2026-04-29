@@ -14,7 +14,7 @@ public class EmployeeController : ControllerBase
 {
     [Route("{id}")]
     [HttpGet]
-    public async  Task<IActionResult> Index(EmployeeRepository repository, long id)
+    public async  Task<IActionResult> GetById(EmployeeRepository repository, long id)
     {
         var emp = await repository.GetEmployee(id);
 
