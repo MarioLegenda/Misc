@@ -52,8 +52,6 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
-builder.Services.AddAuthorization();
-
 builder.Services.AddScoped<EmployeeRepository>();
 builder.Services.AddScoped<JwtService>();
 

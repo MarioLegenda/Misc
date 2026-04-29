@@ -7,17 +7,63 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net.Http.Json;
 using Employees.Models;
 
-public class CustomWebApplicationFactory : WebApplicationFactory<Program>
+public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
+    private readonly HttpClient _client;
+
+    public string Token;
+    
+    public CustomWebApplicationFactory()
+    {
+        _client = this.CreateClient();
+    }
+    
+    public async Task InitializeAsync()
+    {
+        var faker = new CreateUserDtoFaker();
+
+        var dto = faker.Generate();
+
+        var registerRes = await _client.PostAsJsonAsync("/api/auth/register", dto);
+        
+        Assert.Equal(System.Net.HttpStatusCode.Created, registerRes.StatusCode);
+        
+        var user = await registerRes.Content.ReadFromJsonAsync<User>();
+
+        Assert.NotNull(user);
+        
+        var loginRes = await _client.PostAsJsonAsync("/api/auth/login", new
+        {
+            Email = user.Email,
+            Password = dto.Password,
+        });
+        
+        Assert.Equal(System.Net.HttpStatusCode.OK, loginRes.StatusCode);
+        
+        var token = await loginRes.Content.ReadFromJsonAsync<LoginToken>();
+
+        Assert.NotNull(token);
+        Assert.False(string.IsNullOrEmpty(token.Token));
+
+        this.Token = token.Token;
+    }
+
+    public async Task DisposeAsync()
+    {
+    }
 }
 
 public class EmployeeControllerTest: IClassFixture<CustomWebApplicationFactory>
 {
     private readonly HttpClient _client;
+    private readonly string token;
 
     public EmployeeControllerTest(CustomWebApplicationFactory factory)
     {
         _client = factory.CreateClient();
+        this.token = factory.Token;
+        _client.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", this.token);
     }
 
     [Fact]

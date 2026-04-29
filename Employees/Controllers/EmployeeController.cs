@@ -14,6 +14,7 @@ public class EmployeeController : ControllerBase
 {
     [Route("{id}")]
     [HttpGet]
+    [Authorize(Roles = "User")]
     public async  Task<IActionResult> GetById(EmployeeRepository repository, long id)
     {
         var emp = await repository.GetEmployee(id);
@@ -73,6 +74,7 @@ public class EmployeeController : ControllerBase
     }
     
     [HttpPut]
+    [Authorize(Roles = "User")]
     public async Task<IActionResult> UpdateEmployee(
         [FromBody] UpdateEmployeeDto dto,
         EmployeeRepository repository,

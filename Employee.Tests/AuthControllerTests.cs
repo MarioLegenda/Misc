@@ -44,7 +44,7 @@ public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory>
         var token = await response.Content.ReadFromJsonAsync<LoginToken>();
 
         Assert.NotNull(token);
-        Assert.NotNull(token.Token);
+        Assert.False(string.IsNullOrEmpty(token.Token));
     }
 
     private async Task<(User, RegisterDto)> CreateUser()
