@@ -1,9 +1,13 @@
 using Employees.Auth;
 using Employees.Models;
+using System.Net.Http.Json;
 
 namespace Employee.Tests;
 
-using System.Net.Http.Json;
+public class LoginToken
+{
+    public string Token { get; set; }
+}
 
 public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory>
 {
@@ -36,6 +40,11 @@ public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory>
         });
         
         Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
+        
+        var token = await response.Content.ReadFromJsonAsync<LoginToken>();
+
+        Assert.NotNull(token);
+        Assert.NotNull(token.Token);
     }
 
     private async Task<(User, RegisterDto)> CreateUser()

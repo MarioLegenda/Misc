@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authorization;
+
 namespace Employees.Controllers;
 
 using Employees.Repository;
@@ -29,6 +31,7 @@ public class EmployeeController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "User")]
     public async Task<IActionResult> CreateEmployee(
         [FromBody] CreateEmployeeDTO dto,
         EmployeesContext ctx,
