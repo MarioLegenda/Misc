@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using Employees.Models;
+﻿using Employees.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Employees;
 
-public partial class EmployeesContext : DbContext
+public partial class EmployeesContext : IdentityDbContext<User>
 {
     public EmployeesContext()
     {
@@ -17,6 +17,8 @@ public partial class EmployeesContext : DbContext
     }
 
     public virtual DbSet<Department> Departments { get; set; }
+    
+    public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<DepartmentEmployee> DepartmentEmployees { get; set; }
 
@@ -33,8 +35,11 @@ public partial class EmployeesContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder); // 🔥 MUST be first and untouched
+
         modelBuilder.HasDefaultSchema("employees");
-        
+        modelBuilder.Ignore<IdentityPasskeyData>();
+
         modelBuilder.HasPostgresEnum<EmployeeGender>("employee_gender");
         
         /*modelBuilder.Entity<Employee>()

@@ -1,8 +1,6 @@
-
-using Employees.Repository;
-
 namespace Employees.Controllers;
 
+using Employees.Repository;
 using Employees.IncomingDTO;
 using Employees.Models;
 using Microsoft.AspNetCore.Mvc;
